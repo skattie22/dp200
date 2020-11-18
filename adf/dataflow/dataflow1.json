@@ -27,7 +27,7 @@
 					"name": "Window1"
 				}
 			],
-			"script": "source(output(\n\t\tmovie as string,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as string,\n\t\tRating as string,\n\t\t{Rotton Tomato} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsource1 select(mapColumn(\n\t\tmovie,\n\t\ttitle,\n\t\tgenres,\n\t\tyear,\n\t\tRating,\n\t\t{Rotten Tomatoes} = {Rotton Tomato}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 filter(toInteger(year)>1950) ~> Filter1\nFilter1 derive(primarygenre = iif(locate(\"|\",genres)>0,left(genres,locate(\"|\",genres)),genres)) ~> DerivedColumn1\nDerivedColumn1 window(over(movie)) ~> Window1"
+			"script": "source(output(\n\t\tmovie as string,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as string,\n\t\tRating as string,\n\t\t{Rotton Tomato} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsource1 select(mapColumn(\n\t\tmovie,\n\t\ttitle,\n\t\tgenres,\n\t\tyear,\n\t\tRating,\n\t\t{Rotten Tomatoes} = {Rotton Tomato}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 filter(toInteger(year)>1950) ~> Filter1\nFilter1 derive(primarygenre = iif(locate(\"|\",genres)>0,left(genres,locate(\"|\",genres)),genres)) ~> DerivedColumn1\nDerivedColumn1 window(over(primarygenre,\n\t\tyear),\n\tasc({Rotten Tomatoes}, true),\n\tRatingRank = rank()) ~> Window1"
 		}
 	}
 }
